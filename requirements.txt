@@ -4,7 +4,7 @@ langchain-text-splitters
 langchain-huggingface
 langchain-groq
 langchain-core
-faiss-cpu
+chromadb
 pypdf
 sentence-transformers
 transformers
