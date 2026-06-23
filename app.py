@@ -3,7 +3,7 @@ import streamlit as st
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from langsmith import traceable
@@ -81,7 +81,7 @@ def build_pipeline():
         encode_kwargs={"normalize_embeddings": True}
     )
 
-    # Chroma is more stable than FAISS on Streamlit Cloud
+    # Use langchain_chroma (official package, Python 3.14 compatible)
     vectorstore = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
@@ -131,10 +131,8 @@ st.markdown(
 )
 st.divider()
 
-# Load pipeline
 retriever, llm = build_pipeline()
 
-# Session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
@@ -148,20 +146,12 @@ with st.sidebar:
 
     st.divider()
     st.markdown("**Policies covered:**")
-    policies = [
-        "📋 Leave Policy",
-        "🏠 Work From Home Policy",
-        "💰 Compensation & Benefits",
-        "📊 Performance Review",
-        "🤝 Onboarding & Separation",
-        "🛡️ POSH Policy",
-        "💻 IT & Data Security",
-        "✈️ Travel & Expense",
-        "📖 Code of Conduct",
-        "🏢 Company Profile",
-        "📗 Employee Handbook",
-    ]
-    for p in policies:
+    for p in [
+        "📋 Leave Policy", "🏠 Work From Home Policy", "💰 Compensation & Benefits",
+        "📊 Performance Review", "🤝 Onboarding & Separation", "🛡️ POSH Policy",
+        "💻 IT & Data Security", "✈️ Travel & Expense", "📖 Code of Conduct",
+        "🏢 Company Profile", "📗 Employee Handbook",
+    ]:
         st.caption(p)
 
     st.divider()
