@@ -3,7 +3,7 @@ import streamlit as st
 from langchain_community.document_loaders import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 from langsmith import traceable
@@ -81,8 +81,13 @@ def build_pipeline():
         encode_kwargs={"normalize_embeddings": True}
     )
 
-    vectorstore = FAISS.from_documents(chunks, embeddings)
-    retriever   = vectorstore.as_retriever(
+    # Chroma is more stable than FAISS on Streamlit Cloud
+    vectorstore = Chroma.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        collection_name="zyro_hr_docs"
+    )
+    retriever = vectorstore.as_retriever(
         search_type="mmr",
         search_kwargs={"k": 5, "fetch_k": 20, "lambda_mult": 0.6}
     )
